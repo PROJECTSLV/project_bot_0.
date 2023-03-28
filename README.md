@@ -20,4 +20,24 @@ ___
 
 ~~Сделать requerements.txt с зависимостями~~
 
-Добавить в гит игнор файл с ключами или созранить их иным способом
+~~Добавить в гит игнор файл с ключами или созранить их иным способом~~
+
+## Установка и настройка проекта:
+Создаем и запускаем виртуальное окружение:
+```commandline
+python -m venv venv
+```
+Unix, MacOS (bash):
+```commandline
+source venv/bin/activate
+```
+Windows:
+```commandline
+venv\Scripts\activate.bat
+```
+Для установки зависимостей воспользуйтесь командой:
+```commandline
+pip install -r requirements.txt
+```
+
+___
