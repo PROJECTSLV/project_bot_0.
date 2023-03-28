@@ -1,54 +1,47 @@
-import time
-import logging
 import telebot
 from telebot import types
 
-from aiogram import Bot, Dispatcher, executor, types
-
-
 # bot & API
 TOKEN = '6209043627:AAFiY0KrL6IdR8e19pXuRmzHiTL-2DFRuks'
-MSG = "Даешь код!!! {}"
 
 bot = telebot.TeleBot(TOKEN)
 game = 'https://gabryelf.itch.io/galactic-patrulgp01'
 git = 'https://github.com/PROJECTSLV/project_bot_0..git'
-#dp = Dispatcher(bot)
-
-
-#@dp.message_handler(commands=['start'])
-# возвращает тоже что ему сообщили.
-#async def echo(message: types.Message):
-    #await message.answer(text=message.text)
-
-
-async def start_handler(message: types.Message):
-    user_id = message.from_user.id
-    user_name = message.from_user.first_name
-    user_full_name = message.from_user.full_name
-    logging.info(f'{user_id=} {user_full_name=} {time.asctime()}')
-    await message.reply(f"Привет, {user_name}!")
-
-    for i in range(10):
-        time.sleep(2)
-        await bot.send_message(user_id, MSG.format(user_name))
+photo_url = 'https://cloud.mail.ru/public/Mtcn/YaHr433Ld'
 @bot.message_handler(commands=['start'])
 def hello(message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
-    keyboard.add(types.KeyboardButton('Зарубать!'), types.KeyboardButton('Слиться...'))
-    bot.send_message(message.chat.id, f'Привет )) {message.from_user.first_name}!', reply_markup=keyboard)
+    keyboard.add(types.KeyboardButton('Покажи план'), types.KeyboardButton('Покажи проект'))
+    keyboard.add(types.KeyboardButton('Мероприятия'))
+    bot.send_message(message.chat.id, f'Привет {message.from_user.first_name}!', reply_markup=keyboard)
 
-@bot.message_handler(conteint_types=['text'])
+@bot.message_handler(content_types=['text'])
 def main_menu(message):
-    if message.text == 'Зарубать!':
-        bot.send_message(message.chat.id, inline_message_id=game)
-    elif message.text == 'Слиться...!':
-        bot.send_message(message.chat.id, inline_message_id=git)
+    if message.text == 'Покажи план':
+        bot.send_photo(message.chat.id, photo=photo_url, caption='Это он?')
+    elif message.text == 'Покажи проект':
+        f = open('PSP.jpg', 'rb')
+        bot.send_document(message.chat.id, document=f, caption='Это тот файл?')
+    elif message.text == 'Мероприятия':
+        inlineKeyboard = types.InlineKeyboardMarkup()
+        inlineKeyboard.add(types.InlineKeyboardButton('1. Встречи', callback_data='Встречи'))
+        inlineKeyboard.add(types.InlineKeyboardButton('2. Опросы', callback_data='Опросы'))
+        inlineKeyboard.add(types.InlineKeyboardButton('3. Голосования', callback_data='Голосования'))
+        bot.send_message(message.chat.id, 'Близжайшие мероприятия',reply_markup=inlineKeyboard)
+
+@bot.callback_query_handler(func=lambda call: True)
+def getAnswer(call):
+    if call.data == 'Встречи':
+        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Тут есть про это!')
+    elif  call.data == 'Опросы':
+        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Вот они!')
+    elif call.data == 'Голосования':
+        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text='Держите!')
+    bot.answer_callback_query(call.id)
 
 bot.polling(none_stop=True)
 
 
-#if __name__ == '__main__':
-#    executor.start_polling(bot)
+
 
 
